@@ -1,6 +1,7 @@
 import re
 from datetime import datetime, timedelta
 
+import click
 from tqdm import tqdm
 
 
@@ -28,6 +29,7 @@ class Cleaner:
         batch_size=1000,
         cursor_backup_delta=timedelta(minutes=1),
         cursor_backup_expiration=timedelta(days=30),
+        dry_run=False
     ):
         if not redis.connection_pool.connection_kwargs['decode_responses']:
             raise RuntimeError("{} should decode data (decode_responses=True)".format(redis))
@@ -37,9 +39,10 @@ class Cleaner:
         self.batch_size = batch_size
         self.cursor_backup_delta = cursor_backup_delta
         self.cursor_backup_expiration = cursor_backup_expiration
+        self.dry_run = dry_run
 
         self._regex = re.compile('^(?:' + '|'.join(
-            re.escape(p).replace('\\*', '.+')
+            re.escape(p.strip()).replace('\\*', '.+')
             for p in self.patterns
         ) + ')$')
 
@@ -50,35 +53,49 @@ class Cleaner:
         max_cursor = cursor
         redis_size = self.redis.dbsize()
         redis_size = int(1.1 * redis_size)  # To handle duplicates
-        cursor_bar = tqdm(
-            initial=convert_scan_cursor(cursor, max_cursor),
-            total=redis_size,
-            position=0, desc='Cursor', dynamic_ncols=True, unit='', smoothing=.01, unit_scale=1
-        )
-        redis_rows = tqdm(position=1, initial=0, desc='  Rows', dynamic_ncols=True, unit=' deleted',
-                          smoothing=.01, unit_scale=1)
-        while True:
+        if not self.dry_run:
+            cursor_bar = tqdm(
+                initial=convert_scan_cursor(cursor, max_cursor),
+                total=redis_size,
+                position=0, desc='Cursor', dynamic_ncols=True, unit='', smoothing=.01, unit_scale=1
+            )
+            redis_rows = tqdm(position=1, initial=0, desc='  Rows', dynamic_ncols=True, unit=' deleted',
+                              smoothing=.01, unit_scale=1)
+        started = False
+        total_deleted = 0
+        while cursor > 0 or not started:
+            started = True
             cursor, keys = self.redis.scan(cursor, count=self.batch_size)
-            max_cursor = max(max_cursor, cursor)
-            real_cursor = convert_scan_cursor(cursor, max_cursor)
-            cursor_bar.update(real_cursor - cursor_bar.n)
+
+            if not self.dry_run:
+                max_cursor = max(max_cursor, cursor)
+                real_cursor = convert_scan_cursor(cursor, max_cursor)
+                cursor_bar.update(real_cursor - cursor_bar.n)
+
             if not keys:
                 continue
             keys = list(filter(self._regex.match, keys))
             if not keys:
                 continue
-            pipeline = self.redis.pipeline()
-            pipeline.delete(*keys)
-            if self.cursor_backup_delta is not None and datetime.now() - last_backup_time > self.cursor_backup_delta:
-                pipeline.hset(*self._cursor_backup_key, cursor)
-                pipeline.expire(self._cursor_backup_key[0], self.cursor_backup_expiration)
-                last_backup_time = datetime.now()
-            deleted = pipeline.execute()[0]
-            redis_rows.update(deleted)
-            if cursor == 0:
-                break
-        cursor_bar.close()
-        redis_rows.close()
+
+            if not self.dry_run:
+                pipeline = self.redis.pipeline()
+                pipeline.delete(*keys)
+                if self.cursor_backup_delta is not None and datetime.now() - last_backup_time > self.cursor_backup_delta:
+                    pipeline.hset(*self._cursor_backup_key, cursor)
+                    pipeline.expire(self._cursor_backup_key[0], self.cursor_backup_expiration)
+                    last_backup_time = datetime.now()
+                deleted = pipeline.execute()[0]
+                total_deleted += deleted
+                redis_rows.update(deleted)
+            else:
+                for key in keys:
+                    click.echo(key)
+
+        if not self.dry_run:
+            cursor_bar.close()
+            redis_rows.close()
+            click.echo('\n{} keys cleaned'.format(total_deleted))
 
     @property
     def _cursor_backup_key(self):

@@ -62,7 +62,7 @@ cleanup_tst_params = [
 @pytest.mark.parametrize("setup_data,cleanup_patterns,expected,not_expected", cleanup_tst_params)
 def test_cleanup(redis_client, setup_data, cleanup_patterns, expected, not_expected):
     create_test_data(redis_client, setup_data)
-    Cleaner(redis_client, *cleanup_patterns, batch_size=10, cursor_backup_delta=None).cleanup(restart=True)
+    Cleaner(redis_client, cleanup_patterns, batch_size=10, cursor_backup_delta=None).cleanup(restart=True)
     for pattern in expected:
         assert redis_client.keys(pattern)
     for pattern in not_expected:

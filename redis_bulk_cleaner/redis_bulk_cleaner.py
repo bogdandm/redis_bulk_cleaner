@@ -24,7 +24,7 @@ class Cleaner:
     def __init__(
         self,
         redis,
-        *patterns,
+        patterns,
         batch_size=1000,
         cursor_backup_delta=timedelta(minutes=1),
         cursor_backup_expiration=timedelta(days=30),

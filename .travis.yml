@@ -15,7 +15,7 @@ deploy:
         distributions: sdist bdist_wheel
         user: bogdandm
         password:
-            secure: "jKI8MYdZSOABETih7XHCVJEsR9ACGIchIggQYDHYjYnQUtG/uF2349iX7CGtLTqso/5/TsEPK/8vV4Hr/kaqBF8TB86EV5Xyts0CaZu928dWwJ0a3iJoyAy1JuUSzu6QGcU6Na0PGcIC/w351PCB7ZNOqfTW/K29qswbV/AGvv37HfBcpqt5J+BSOpe0v8FhzlO3HxB22pWuN+VOdijhMH5ovBtRH7IM5CoxlrdoGzMLgV+mp2pBhbsdbnOcHOFCATjQn/r7V6j5R6gesx88wD8pn+VfhsV8YLKJ7csjU8O83EpcOS6/DuAL6W0GrdimBFwAOWY7p1vChVXZ9RlJ8I9F1B9wvMtohWdW3TEwWajugu1DGT9OgE0LNGjsk6RXyu+bAgfCvuYwxlYaA5/y/6A1caa6XWIgalgInaS3lsM1o3Lu1U+alogtjeJlnsxJZuOxewssvZr8QM816p0kKuFPMC029bBYMlazA0kictCqJ1jJxw3pAwMwOxR7DpopoEIntyOLuj6W1z/UzQ4+VqtwaYzfTOCxJZSwVVXNcwdgjByynUfGHGeXekRDjOuMID5pujmhfjUgjMOTD0bGoQlKKzq1eAwIH0lSxJ8mbKNWVd+Pm8XaQbFnnQ3z3UeTcyPlDU7eezamLgoMq9FgTKByeEoEtu9afzRgLR/XgPk="
+            secure: AgtI6R5crB9FXV3MeKNeRrnQ3iPuJJJ57LaVcMr4DjOwuz3IMVdbiPBrG8d4Rk9U6gjd6MDwlpmv0yDGLibbwvWmbcUTxyO3DSly2P3+D/uqVcxp6U/pgdnM9e7kcPwTfqcBmpg6lr/9kG0C2hOkUAsF8oUGCshGskc9bNXtGRoU1ZEY6FtmE9TD5F1qm3w6ZP9QHTHikInflPGkERvwddBA5v0quWvj8GqlKL7MBvlQZIq52R7u9MLcLPbXYSqftVKV1nYa9YKkRyXT4JEpeUKW/xRQJ9UBhTJTJZdoB8jJukNt29v/jr13xWYtwk8xtgAhhmgBBl/v4a1VnwC4kLfcVuUePiktDJZJEVQaHggHP/NhH5eaVYjdoxjyTpC212x5iAOaJVLTK/m6ua1aAhQaknzaDIXOBgJv24rYH+W2mavz5vAY+TwKQciE2j4y3TINTzhrbpkAdL5TAWS+qJIaIVNCMidae/Kl1B3dehJt+YvTYkZcGZ5DWxZRrMYpzVHOdoSCLyT/CF5pF/nTYyJxEF4D7IqPSgkW5ej+8AXHEexRxdXWTP3hYZlhT5TmulXhryoj4ROw3fGzoqBChIz/Lrv/9j8GJqe9OoQFRb5u856Uae0K/WOrXuvk91BCSLr4iC3/MbjRpWlgdcjr5dGKdFiVt2I0J9kT48GmBWs=
         on:
             tags: true
             all_branches: false

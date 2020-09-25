@@ -30,7 +30,7 @@ class Cleaner:
         cursor_backup_expiration=timedelta(days=30),
     ):
         if not redis.connection_pool.connection_kwargs['decode_responses']:
-            raise RuntimeError(f"{redis} should decode data (decode_responses=True)")
+            raise RuntimeError("{} should decode data (decode_responses=True)".format(redis))
 
         self.redis = redis
         self.patterns = sorted(patterns)

@@ -14,7 +14,7 @@ deploy:
         distributions: sdist bdist_wheel
         user: bogdandm
         password:
-            secure: PLEASE_REPLACE_ME
+            secure: "jKI8MYdZSOABETih7XHCVJEsR9ACGIchIggQYDHYjYnQUtG/uF2349iX7CGtLTqso/5/TsEPK/8vV4Hr/kaqBF8TB86EV5Xyts0CaZu928dWwJ0a3iJoyAy1JuUSzu6QGcU6Na0PGcIC/w351PCB7ZNOqfTW/K29qswbV/AGvv37HfBcpqt5J+BSOpe0v8FhzlO3HxB22pWuN+VOdijhMH5ovBtRH7IM5CoxlrdoGzMLgV+mp2pBhbsdbnOcHOFCATjQn/r7V6j5R6gesx88wD8pn+VfhsV8YLKJ7csjU8O83EpcOS6/DuAL6W0GrdimBFwAOWY7p1vChVXZ9RlJ8I9F1B9wvMtohWdW3TEwWajugu1DGT9OgE0LNGjsk6RXyu+bAgfCvuYwxlYaA5/y/6A1caa6XWIgalgInaS3lsM1o3Lu1U+alogtjeJlnsxJZuOxewssvZr8QM816p0kKuFPMC029bBYMlazA0kictCqJ1jJxw3pAwMwOxR7DpopoEIntyOLuj6W1z/UzQ4+VqtwaYzfTOCxJZSwVVXNcwdgjByynUfGHGeXekRDjOuMID5pujmhfjUgjMOTD0bGoQlKKzq1eAwIH0lSxJ8mbKNWVd+Pm8XaQbFnnQ3z3UeTcyPlDU7eezamLgoMq9FgTKByeEoEtu9afzRgLR/XgPk="
         on:
             tags: true
             all_branches: false
@@ -22,18 +22,18 @@ deploy:
             python: 3.8
         skip_existing: true
 
-    -   provider: releases
-        api_key:
-            secure: PLEASE_REPLACE_ME
-        file_glob: true
-        file: dist/*
-        skip_cleanup: true
-        overwrite: true
-        draft: true
-        name: ${TRAVIS_TAG} (draft)
-        on:
-            tags: true
-            all_branches: false
-            repo: bogdandm/redis_bulk_cleaner
-            python: 3.8
+#    -   provider: releases
+#        api_key:
+#            secure: PLEASE_REPLACE_ME
+#        file_glob: true
+#        file: dist/*
+#        skip_cleanup: true
+#        overwrite: true
+#        draft: true
+#        name: ${TRAVIS_TAG} (draft)
+#        on:
+#            tags: true
+#            all_branches: false
+#            repo: bogdandm/redis_bulk_cleaner
+#            python: 3.8
 

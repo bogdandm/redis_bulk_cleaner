@@ -72,9 +72,6 @@ def test_cleanup(redis_client, setup_data, cleanup_patterns, expected, not_expec
 def test_command_line_interface_help():
     """Test the CLI."""
     runner = CliRunner()
-    result = runner.invoke(cli.main)
-    assert result.exit_code == 0
-    assert 'redis_bulk_cleaner.cli.main' in result.output
     help_result = runner.invoke(cli.main, ['--help'])
     assert help_result.exit_code == 0
-    assert '--help  Show this message and exit.' in help_result.output
+    assert 'Show this message and exit.' in help_result.output

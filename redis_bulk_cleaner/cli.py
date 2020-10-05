@@ -18,8 +18,8 @@ from redis_bulk_cleaner.redis_bulk_cleaner import Cleaner
 @click.option('--password', '-P', type=str, default='', help='Redis password', show_default=True)
 #
 @click.option('--batch', '-b', type=int, default=500, help='Redis SCAN batch size', show_default=True)
-@click.option('--use-cursor-backups', is_flag=True, default=True, show_default=True, help='Save SCAN cursor in tmp redis key')
-def main(patterns, host, port, db, password, batch, dry_run, restart, use_cursor_backups):
+@click.option('--disable-cursor-backups', is_flag=True, default=False, show_default=True, help='Save SCAN cursor in tmp redis key')
+def main(patterns, host, port, db, password, batch, dry_run, restart, disable_cursor_backups):
     assert patterns
     if not dry_run:
         click.echo('This tools will delete ANY key that matches any of the following pattern:\n'
@@ -37,7 +37,7 @@ def main(patterns, host, port, db, password, batch, dry_run, restart, use_cursor
         patterns,
         batch_size=batch,
         dry_run=dry_run,
-        cursor_backup_delta=timedelta(minutes=1) if use_cursor_backups else None
+        cursor_backup_delta=None if disable_cursor_backups else timedelta(minutes=1)
     ).cleanup(restart=restart)
     return 0
 

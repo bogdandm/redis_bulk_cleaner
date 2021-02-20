@@ -26,6 +26,7 @@ class Cleaner:
         self,
         redis,
         patterns,
+        use_regex_patterns=False,
         batch_size=1000,
         cursor_backup_delta=timedelta(minutes=1),
         cursor_backup_expiration=timedelta(days=30),
@@ -42,7 +43,9 @@ class Cleaner:
         self.dry_run = dry_run
 
         self._regex = re.compile('^(?:' + '|'.join(
-            re.escape(p.strip()).replace('\\*', '.+')
+            p.strip()
+            if use_regex_patterns
+            else re.escape(p.strip()).replace('\\*', '.+')
             for p in self.patterns
         ) + ')$')
 

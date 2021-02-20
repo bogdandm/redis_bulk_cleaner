@@ -11,6 +11,9 @@ from redis_bulk_cleaner.redis_bulk_cleaner import Cleaner
 @click.argument('patterns', nargs=-1)
 @click.option('--dry-run', '-D', is_flag=True, help='Do not delete keys just print them')
 @click.option('--restart', '-R', is_flag=True, help='Restart SCAN operation (if --use-cursor-backups is enabled)')
+@click.option('--use-regex', '-r', is_flag=True, help='By default patterns are redis-patterns (* equals any characters sequence including `:`). '
+                                                      'If this flag is enabled then it will parse patterns as python regex expressions '
+                                                      '(some escaping may still be needed base on your shell type)')
 #
 @click.option('--host', '-h', type=str, default='localhost', help='Redis host', show_default=True)
 @click.option('--port', '-p', type=int, default=6379, help='Redis port', show_default=True)
@@ -19,7 +22,7 @@ from redis_bulk_cleaner.redis_bulk_cleaner import Cleaner
 #
 @click.option('--batch', '-b', type=int, default=500, help='Redis SCAN batch size', show_default=True)
 @click.option('--disable-cursor-backups', is_flag=True, default=False, show_default=True, help='Save SCAN cursor in tmp redis key')
-def main(patterns, host, port, db, password, batch, dry_run, restart, disable_cursor_backups):
+def main(patterns, host, port, db, password, batch, dry_run, restart, disable_cursor_backups, use_regex):
     assert patterns
     if not dry_run:
         click.echo('This tools will delete ANY key that matches any of the following pattern:\n'
@@ -35,6 +38,7 @@ def main(patterns, host, port, db, password, batch, dry_run, restart, disable_cu
     Cleaner(
         redis_client,
         patterns,
+        use_regex_patterns=use_regex,
         batch_size=batch,
         dry_run=dry_run,
         cursor_backup_delta=None if disable_cursor_backups else timedelta(minutes=1)

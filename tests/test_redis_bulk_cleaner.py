@@ -28,7 +28,7 @@ def test_connect(redis_client):
 
 
 def get_rand_string(n):
-    char_set = string.digits + string.ascii_letters + string.punctuation
+    char_set = string.digits + string.ascii_letters + ''.join(set(string.punctuation) - {':'})
     return ''.join(sample(char_set, 6))
 
 
@@ -79,6 +79,49 @@ def test_cleanup(redis_client, setup_data, cleanup_patterns, expected, not_expec
     create_test_data(redis_client, setup_data)
     expected_keys = set(chain.from_iterable(redis_client.keys(pattern) for pattern in expected))
     Cleaner(redis_client, cleanup_patterns, batch_size=10, cursor_backup_delta=None).cleanup(restart=True)
+    for pattern in expected:
+        assert redis_client.keys(pattern)
+    for pattern in not_expected:
+        assert not redis_client.keys(pattern)
+    assert not set(redis_client.keys('*')) - expected_keys
+
+
+# create_test_data values, cleanup patterns, expected keys patterns, not expected keys patterns
+cleanup_tst_params = [
+    pytest.param(
+        {
+            'user:<int>:session': 1000,
+            'user:<int>:junk': 1000,
+            'test': 1,
+            'test_important': 1,
+        },
+        ['user:\d+:junk', 'test'],
+        ['user:*:session', 'test_important'],
+        ['user:*:junk', 'test'],
+        id="simple"
+    ),
+    pytest.param(
+        {
+            'user:<int>:session': 1000,
+            'user:<str>:session': 1000,
+            'user:<uuid>:session': 1000,
+            'user:<int>:delete_me': 1000,
+            'user:<str>:delete_me': 1000,
+            'user:<uuid>:delete_me': 1000,
+        },
+        ['user:[^ :]+:delete_me'],
+        ['user:*:session'],
+        ['user:*:delete_me'],
+        id="different_types"
+    ),
+]
+
+
+@pytest.mark.parametrize("setup_data,cleanup_patterns,expected,not_expected", cleanup_tst_params)
+def test_cleanup_regex_patterns(redis_client, setup_data, cleanup_patterns, expected, not_expected):
+    create_test_data(redis_client, setup_data)
+    expected_keys = set(chain.from_iterable(redis_client.keys(pattern) for pattern in expected))
+    Cleaner(redis_client, cleanup_patterns, use_regex_patterns=True, batch_size=10, cursor_backup_delta=None).cleanup(restart=True)
     for pattern in expected:
         assert redis_client.keys(pattern)
     for pattern in not_expected:

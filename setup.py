@@ -48,6 +48,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/bogdandm/redis_bulk_cleaner',
-    version='0.1.3',
+    version='0.1.4',
     zip_safe=False,
 )

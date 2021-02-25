@@ -121,7 +121,7 @@ cleanup_tst_params = [
 def test_cleanup_regex_patterns(redis_client, setup_data, cleanup_patterns, expected, not_expected):
     create_test_data(redis_client, setup_data)
     expected_keys = set(chain.from_iterable(redis_client.keys(pattern) for pattern in expected))
-    Cleaner(redis_client, cleanup_patterns, use_regex_patterns=True, batch_size=10, cursor_backup_delta=None).cleanup(restart=True)
+    Cleaner(redis_client, cleanup_patterns, use_regex_patterns=True, batch_size=10, sleep_between_batches=1, cursor_backup_delta=None).cleanup(restart=True)
     for pattern in expected:
         assert redis_client.keys(pattern)
     for pattern in not_expected:

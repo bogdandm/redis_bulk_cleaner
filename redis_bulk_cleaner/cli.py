@@ -14,6 +14,7 @@ from redis_bulk_cleaner.redis_bulk_cleaner import Cleaner
 @click.option('--use-regex', '-r', is_flag=True, help='By default patterns are redis-patterns (* equals any characters sequence including `:`). '
                                                       'If this flag is enabled then it will parse patterns as python regex expressions '
                                                       '(some escaping may still be needed base on your shell type)')
+@click.option('--sleep', '-s', type=int, default=0, help='(milliseconds) Sleep between DELETE commands to prevent high memory and cpu usage.')
 #
 @click.option('--host', '-h', type=str, default='localhost', help='Redis host', show_default=True)
 @click.option('--port', '-p', type=int, default=6379, help='Redis port', show_default=True)
@@ -22,7 +23,7 @@ from redis_bulk_cleaner.redis_bulk_cleaner import Cleaner
 #
 @click.option('--batch', '-b', type=int, default=500, help='Redis SCAN batch size', show_default=True)
 @click.option('--disable-cursor-backups', is_flag=True, default=False, show_default=True, help='Save SCAN cursor in tmp redis key')
-def main(patterns, host, port, db, password, batch, dry_run, restart, disable_cursor_backups, use_regex):
+def main(patterns, host, port, db, password, batch, dry_run, restart, disable_cursor_backups, use_regex, sleep):
     assert patterns
     if not dry_run:
         click.echo('This tools will delete ANY key that matches any of the following pattern:\n'

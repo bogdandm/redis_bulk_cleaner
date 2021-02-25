@@ -60,6 +60,7 @@ Progress bar could go beyond 100%.
 * `-r`, `--use-regex` - By default patterns are redis-patterns (`*` equals any characters sequence including `:`).
   If this flag is enabled then it will parse patterns as python regex expressions (some escaping may still be needed base on your shell type)
     * **Default**: disabled
+* `-s`, `--sleep` - (milliseconds) Sleep between DELETE commands to prevent high memory and cpu usage. Disabled by default.
 * `-h`, `--host` - Redis server host
     * **Default**: `localhost`
 * `-p`, `--port` - Redis server port

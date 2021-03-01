@@ -14,7 +14,6 @@ from redis_bulk_cleaner.redis_bulk_cleaner import Cleaner
 @click.option('--use-regex', '-r', is_flag=True, help='By default patterns are redis-patterns (* equals any characters sequence including `:`). '
                                                       'If this flag is enabled then it will parse patterns as python regex expressions '
                                                       '(some escaping may still be needed base on your shell type)')
-@click.option('--sleep', '-s', type=int, default=0, help='(milliseconds) Sleep between DELETE commands to prevent high memory and cpu usage.')
 #
 @click.option('--host', '-h', type=str, default='localhost', help='Redis host', show_default=True)
 @click.option('--port', '-p', type=int, default=6379, help='Redis port', show_default=True)
@@ -22,6 +21,7 @@ from redis_bulk_cleaner.redis_bulk_cleaner import Cleaner
 @click.option('--password', '-P', type=str, default='', help='Redis password', show_default=True)
 #
 @click.option('--batch', '-b', type=int, default=500, help='Redis SCAN batch size', show_default=True)
+@click.option('--sleep', '-s', type=int, default=0, help='(milliseconds) Sleep between DELETE commands to prevent high memory and cpu usage.')
 @click.option('--disable-cursor-backups', is_flag=True, default=False, show_default=True, help='Save SCAN cursor in tmp redis key')
 def main(patterns, host, port, db, password, batch, dry_run, restart, disable_cursor_backups, use_regex, sleep):
     assert patterns
@@ -41,6 +41,7 @@ def main(patterns, host, port, db, password, batch, dry_run, restart, disable_cu
         patterns,
         use_regex_patterns=use_regex,
         batch_size=batch,
+        sleep_between_batches=sleep,
         dry_run=dry_run,
         cursor_backup_delta=None if disable_cursor_backups else timedelta(minutes=1)
     ).cleanup(restart=restart)

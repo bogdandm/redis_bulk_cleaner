@@ -2,8 +2,10 @@ import re
 from datetime import datetime, timedelta
 from functools import partial
 from time import sleep
+from typing import Literal
 
 import click
+import redis
 from tqdm import tqdm
 
 
@@ -26,9 +28,10 @@ def get_redis_size_from_max_cursor(max_cursor):
 class Cleaner:
     def __init__(
         self,
-        redis,
+        redis: redis.Redis,
         patterns,
         use_regex_patterns=False,
+        mode: Literal['unlink', 'delete'] = 'unlink',
         batch_size=1000,
         sleep_between_batches=0,
         cursor_backup_delta=timedelta(minutes=1),
@@ -40,6 +43,7 @@ class Cleaner:
 
         self.redis = redis
         self.patterns = sorted(patterns)
+        self.mode = mode
         self.batch_size = batch_size
         self.cursor_backup_delta = cursor_backup_delta
         self.cursor_backup_expiration = cursor_backup_expiration
@@ -86,7 +90,10 @@ class Cleaner:
                 continue
 
             if not self.dry_run:
-                deleted = self.redis.delete(*keys)
+                if self.mode == 'unlink':
+                    deleted = self.redis.unlink(*keys)
+                else:
+                    deleted = self.redis.delete(*keys)
                 if self.cursor_backup_delta is not None and datetime.now() - last_backup_time > self.cursor_backup_delta:
                     self.redis.hset(*self._cursor_backup_key, cursor)
                     self.redis.expire(self._cursor_backup_key[0], self.cursor_backup_expiration)

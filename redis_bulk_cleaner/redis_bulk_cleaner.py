@@ -98,6 +98,8 @@ class Cleaner:
                     self.redis.hset(*self._cursor_backup_key, cursor)
                     self.redis.expire(self._cursor_backup_key[0], self.cursor_backup_expiration)
                     last_backup_time = datetime.now()
+                    if not self.dry_run:
+                        cursor_bar.refresh()
                 total_deleted += deleted
                 redis_rows.update(deleted)
                 self.sleep()
